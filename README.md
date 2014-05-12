@@ -18,90 +18,90 @@ Winboard users can use the following text saved in a batch file (kindly provided
 
 Until more documentation becomes available, here is a short paper (PDF) that explains the move generation (from the ICGA Journal Vol. 30 No.2) which is in this same repository.
 
-And here is a sample session:
-[Sam-Tannous-Computer:~/shatranj] stannous% python
->>> from shatranj import *
-...reading startup data
-...total time to read data 0.0774528980255
-...found opening book shatranj-book.bin with 37848 positions
->>> position = Position("r1bqk2r/pppp1ppp/2n5/5N2/2B1n3/8/PPP1QPPP/R1B1K2R")
->>> all_pieces = position.piece_bb["b_occupied"] | position.piece_bb["w_occupied"]
->>> other_pieces = position.piece_bb["b_occupied"]
->>> from_square = c4
->>> wtm = 1
->>> mask = position.pinned(from_square,wtm)
->>> ne_pieces = diag_mask_ne[from_square] & all_pieces
->>> nw_pieces = diag_mask_nw[from_square] & all_pieces
->>> moves = ((diag_attacks_ne[from_square][ne_pieces] & other_pieces) | \
-...          (diag_attacks_ne[from_square][ne_pieces] & ~all_pieces)  | \
-...          (diag_attacks_nw[from_square][nw_pieces] & other_pieces) | \
-...          (diag_attacks_nw[from_square][nw_pieces] & ~all_pieces)) & mask
->>> 
->>> moves
-1275777090846720L
->>> 
->>> tobase(moves,2)
-'100100010000101000000000000010100000000000000000000'
->>> display(moves)
+	And here is a sample session:
+	[Sam-Tannous-Computer:~/shatranj] stannous% python
+	>>> from shatranj import *
+	...reading startup data
+	...total time to read data 0.0774528980255
+	...found opening book shatranj-book.bin with 37848 positions
+	>>> position = Position("r1bqk2r/pppp1ppp/2n5/5N2/2B1n3/8/PPP1QPPP/R1B1K2R")
+	>>> all_pieces = position.piece_bb["b_occupied"] | position.piece_bb["w_occupied"]
+	>>> other_pieces = position.piece_bb["b_occupied"]
+	>>> from_square = c4
+	>>> wtm = 1
+	>>> mask = position.pinned(from_square,wtm)
+	>>> ne_pieces = diag_mask_ne[from_square] & all_pieces
+	>>> nw_pieces = diag_mask_nw[from_square] & all_pieces
+	>>> moves = ((diag_attacks_ne[from_square][ne_pieces] & other_pieces) | \
+	...          (diag_attacks_ne[from_square][ne_pieces] & ~all_pieces)  | \
+	...          (diag_attacks_nw[from_square][nw_pieces] & other_pieces) | \
+	...          (diag_attacks_nw[from_square][nw_pieces] & ~all_pieces)) & mask
+	>>> 
+	>>> moves
+	1275777090846720L
+	>>> 
+	>>> tobase(moves,2)
+	'100100010000101000000000000010100000000000000000000'
+	>>> display(moves)
 
-    +---+---+---+---+---+---+---+---+
-  8 |   | . |   | . |   | . |   | . | 
-    +---+---+---+---+---+---+---+---+
-  7 | . |   | . |   | . | 1 | . |   | 
-    +---+---+---+---+---+---+---+---+
-  6 | 1 | . |   | . | 1 | . |   | . | 
-    +---+---+---+---+---+---+---+---+
-  5 | . | 1 | . | 1 | . |   | . |   | 
-    +---+---+---+---+---+---+---+---+
-  4 |   | . |   | . |   | . |   | . | 
-    +---+---+---+---+---+---+---+---+
-  3 | . | 1 | . | 1 | . |   | . |   | 
-    +---+---+---+---+---+---+---+---+
-  2 |   | . |   | . |   | . |   | . | 
-    +---+---+---+---+---+---+---+---+
-  1 | . |   | . |   | . |   | . |   | 
-    +---+---+---+---+---+---+---+---+
-      a   b   c   d   e   f   g   h  
+	    +---+---+---+---+---+---+---+---+
+	  8 |   | . |   | . |   | . |   | . | 
+	    +---+---+---+---+---+---+---+---+
+	  7 | . |   | . |   | . | 1 | . |   | 
+	    +---+---+---+---+---+---+---+---+
+	  6 | 1 | . |   | . | 1 | . |   | . | 
+	    +---+---+---+---+---+---+---+---+
+	  5 | . | 1 | . | 1 | . |   | . |   | 
+	    +---+---+---+---+---+---+---+---+
+	  4 |   | . |   | . |   | . |   | . | 
+	    +---+---+---+---+---+---+---+---+
+	  3 | . | 1 | . | 1 | . |   | . |   | 
+	    +---+---+---+---+---+---+---+---+
+	  2 |   | . |   | . |   | . |   | . | 
+	    +---+---+---+---+---+---+---+---+
+	  1 | . |   | . |   | . |   | . |   | 
+	    +---+---+---+---+---+---+---+---+
+	      a   b   c   d   e   f   g   h  
 
->>> position.show_moves(1)
-['Rg1', 'O-O', 'f3', 'a3', 'Rb1', 'f4', 'Ba6', 
-'Bh6', 'Bd3', 'Qg4', 'Qe3', 'Ne7', 'Be6', 'Nxg7', 
-'Qxe4', 'Ne3', 'b4', 'Nh4', 'b3', 'Be3', 'Bg5', 
-'g3', 'Kf1', 'Rf1', 'Nh6', 'a4', 'Ng3', 'Qh5', 
-'Kd1', 'h4', 'h3', 'c3', 'Bxf7', 'Nd6', 'Bb5', 
-'Nd4', 'Qf3', 'g4', 'Qf1', 'Bb3', 'Qd1', 'Qd3', 
-'Qd2', 'Bd5', 'Bd2', 'Bf4']
->>> 
->>> # now play a game!
->>> play()
-Shatranj version 1.10
-         g: switch sides     m: show legal moves
-         n: new game         l: list game record
-         d: display board    b: show book moves
-        sd: change search depth (2-16) default=5
-         q: quit
+	>>> position.show_moves(1)
+	['Rg1', 'O-O', 'f3', 'a3', 'Rb1', 'f4', 'Ba6', 
+	'Bh6', 'Bd3', 'Qg4', 'Qe3', 'Ne7', 'Be6', 'Nxg7', 
+	'Qxe4', 'Ne3', 'b4', 'Nh4', 'b3', 'Be3', 'Bg5', 
+	'g3', 'Kf1', 'Rf1', 'Nh6', 'a4', 'Ng3', 'Qh5', 
+	'Kd1', 'h4', 'h3', 'c3', 'Bxf7', 'Nd6', 'Bb5', 
+	'Nd4', 'Qf3', 'g4', 'Qf1', 'Bb3', 'Qd1', 'Qd3', 
+	'Qd2', 'Bd5', 'Bd2', 'Bf4']
+	>>> 
+	>>> # now play a game!
+	>>> play()
+	Shatranj version 1.10
+	         g: switch sides     m: show legal moves
+	         n: new game         l: list game record
+	         d: display board    b: show book moves
+	        sd: change search depth (2-16) default=5
+	         q: quit
 
-Shatranj: d
+	Shatranj: d
 
-    +---+---+---+---+---+---+---+---+
-  8 | r | n | b | q | k | b | n | r | 
-    +---+---+---+---+---+---+---+---+
-  7 | p | p | p | p | p | p | p | p | 
-    +---+---+---+---+---+---+---+---+
-  6 |   | . |   | . |   | . |   | . | 
-    +---+---+---+---+---+---+---+---+
-  5 | . |   | . |   | . |   | . |   | 
-    +---+---+---+---+---+---+---+---+
-  4 |   | . |   | . |   | . |   | . | 
-    +---+---+---+---+---+---+---+---+
-  3 | . |   | . |   | . |   | . |   | 
-    +---+---+---+---+---+---+---+---+
-  2 | P | P | P | P | P | P | P | P | 
-    +---+---+---+---+---+---+---+---+
-  1 | R | N | B | Q | K | B | N | R | 
-    +---+---+---+---+---+---+---+---+
-      a   b   c   d   e   f   g   h  
+	    +---+---+---+---+---+---+---+---+
+	  8 | r | n | b | q | k | b | n | r | 
+	    +---+---+---+---+---+---+---+---+
+	  7 | p | p | p | p | p | p | p | p | 
+	    +---+---+---+---+---+---+---+---+
+	  6 |   | . |   | . |   | . |   | . | 
+	    +---+---+---+---+---+---+---+---+
+	  5 | . |   | . |   | . |   | . |   | 
+	    +---+---+---+---+---+---+---+---+
+	  4 |   | . |   | . |   | . |   | . | 
+	    +---+---+---+---+---+---+---+---+
+	  3 | . |   | . |   | . |   | . |   | 
+	    +---+---+---+---+---+---+---+---+
+	  2 | P | P | P | P | P | P | P | P | 
+	    +---+---+---+---+---+---+---+---+
+	  1 | R | N | B | Q | K | B | N | R | 
+	    +---+---+---+---+---+---+---+---+
+	      a   b   c   d   e   f   g   h  
 
 
 
-Shatranj: 
+	Shatranj: 
