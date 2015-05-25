@@ -384,7 +384,7 @@ class Position:
             if (wtm): 
                 from_square = to_square>>7 
             else:
-                from_square = to_square<<9 & ALL_ONES
+                from_square = to_square<<9
             mask = self.pinned(from_square,wtm)
             if (mask & to_square):
                 if (rank[to_square] == 8 or rank[to_square] == 1):
