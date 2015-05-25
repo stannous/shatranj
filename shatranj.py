@@ -318,8 +318,7 @@ class Position:
             piece = piece_bb['K']
             attacked_ks = (attacks_to[g1] | \
                            attacks_to[f1]) & other_pieces
-            attacked_qs = (attacks_to[b1] | \
-                           attacks_to[c1] |
+            attacked_qs = (attacks_to[c1] | \
                            attacks_to[d1]) & other_pieces
             if (self.w_rook_h1_move_count == 0 and \
                 piece_name.has_key(h1) and piece_name[h1] == 'R' and \
@@ -337,8 +336,7 @@ class Position:
             piece = piece_bb['k']
             attacked_ks = (attacks_to[g8] | \
                            attacks_to[f8]) & other_pieces
-            attacked_qs = (attacks_to[b8] | \
-                           attacks_to[c8] |
+            attacked_qs = (attacks_to[c8] | \
                            attacks_to[d8]) & other_pieces
             if (self.b_rook_h8_move_count == 0 and \
                 piece_name.has_key(h8) and piece_name[h8] == 'r' and \
