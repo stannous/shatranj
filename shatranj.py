@@ -1082,15 +1082,17 @@ class Position:
                     #print "FOUND SINGLE"
                     blocking_pawn = empty_square & forward_pawns
                     if (wtm):
-                        mask = self.pinned(blocking_pawn>>8,wtm)
-                        if (mask & empty_square):
-                            move_list.append(Move(blocking_pawn >> 8,
-                                                 empty_square,"","",""))
+                        from_square = blocking_pawn>>8
                     else:
-                        mask = self.pinned(blocking_pawn<<8,wtm)
-                        if (mask & empty_square):
-                            move_list.append(Move(blocking_pawn << 8,
-                                                 empty_square,"","",""))
+                        from_square = blocking_pawn<<8
+                    mask = self.pinned(from_square,wtm)
+                    if mask & empty_square:
+                        if rank[empty_square] == 1 or rank[empty_square] == 8:
+                            move_list.append(Move(from_square,empty_square,
+                                                 "promotion","","Q"))
+                        else:
+                            move_list.append(Move(from_square,empty_square,
+                                                 "","",""))
                 elif (empty_square & double_forward_pawns):
                     # double moves for pawns must make sure that nothing
                     # is blocking their move to the empty square
