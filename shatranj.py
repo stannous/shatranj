@@ -1082,15 +1082,17 @@ class Position:
                     #print "FOUND SINGLE"
                     blocking_pawn = empty_square & forward_pawns
                     if (wtm):
-                        mask = self.pinned(blocking_pawn>>8,wtm)
-                        if (mask & empty_square):
-                            move_list.append(Move(blocking_pawn >> 8,
-                                                 empty_square,"","",""))
+                        from_square = blocking_pawn>>8
                     else:
-                        mask = self.pinned(blocking_pawn<<8,wtm)
-                        if (mask & empty_square):
-                            move_list.append(Move(blocking_pawn << 8,
-                                                 empty_square,"","",""))
+                        from_square = blocking_pawn<<8
+                    mask = self.pinned(from_square,wtm)
+                    if mask & empty_square:
+                        if rank[empty_square] == 1 or rank[empty_square] == 8:
+                            move_list.append(Move(from_square,empty_square,
+                                                 "promotion","","Q"))
+                        else:
+                            move_list.append(Move(from_square,empty_square,
+                                                 "","",""))
                 elif (empty_square & double_forward_pawns):
                     # double moves for pawns must make sure that nothing
                     # is blocking their move to the empty square
@@ -4233,6 +4235,23 @@ def test_checkmated ():
         print "    10.2 draw test: FAILED"
         tests_failed += 1
 
+def test_promotion ():
+    global tests_passed, tests_failed, test_number
+    SEARCH_DEPTH = 5
+    wtm = 1
+    fen = "3r3K/6P1/8/8/8/8/8/3k4"
+    p = Position(fen)
+    print "11. test: promotion"
+    move_list = p.generate_moves(wtm=1)
+    moves,san_moves = p.get_move_list(move_list)
+    san = san_moves.values()
+    print("    promotion moves are %s"%san)
+    if ('Kh7' in san and 'g8=' in san):
+        print "    11.1 promotion moves: PASSED"
+        tests_passed += 1
+    else:
+        print "    11.1 promotion moves: FAILED"
+        tests_failed += 1
 
 def test_icga ():
     """
@@ -4324,6 +4343,7 @@ def test ():
     test_castling()
     test_check()
     test_checkmated()
+    test_promotion()
     print "==========================================="
     print "total tests PASSED=%s  FAILED=%s" % (tests_passed,tests_failed)
     sys.exit()
