@@ -4253,6 +4253,34 @@ def test_promotion ():
         print "    11.1 promotion moves: FAILED"
         tests_failed += 1
 
+def test_skewered_ep ():
+    global tests_passed, tests_failed, test_number
+    print "12. test: skewered ep"
+
+    fen = "8/4p3/8/r2P3K/8/8/8/4k3"
+    p = Position(fen)
+
+    p.make_move(Move(e7, e5, "pawn double move", "", ""))
+    if position2fen(p) == "8/8/8/r2Pp2K/8/8/8/4k3":
+        print "    12.1 double pawn move: PASSED"
+        tests_passed += 1
+    else:
+        print "    12.1 double pawn move: FAILED"
+        tests_failed += 1
+
+    # After an en passant capture, both the capturer and the captured pawn
+    # would disappear from the fifth rank, leaving the king in check. Ensure
+    # this does not happen.
+    move_list = p.generate_moves(wtm=1)
+    moves,san_moves = p.get_move_list(move_list)
+    san = san_moves.values()
+    if "dxe6" not in san and "d6" in san:
+        print "    12.2 can not capture: PASSED"
+        tests_passed += 1
+    else:
+        print "    12.2 can not capture: FAILED"
+        tests_failed += 1
+
 def test_icga ():
     """
     This is some test code for an ICGA Journal article
@@ -4344,6 +4372,7 @@ def test ():
     test_check()
     test_checkmated()
     test_promotion()
+    test_skewered_ep()
     print "==========================================="
     print "total tests PASSED=%s  FAILED=%s" % (tests_passed,tests_failed)
     sys.exit()
