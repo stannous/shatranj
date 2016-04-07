@@ -407,7 +407,7 @@ class Position:
                 if (rank5_pawn):
                     mask = self.pinned(rank5_pawn,wtm)
                     to_square = file_mask[last_double] & rank_mask[a6]
-                    if (mask & to_square):
+                    if (mask & to_square) and not self.ep_pinned(rank5_pawn,to_square):
                         move_list.insert(0,Move(rank5_pawn,to_square,"enpassant","p",""))
             # handle the left side capture
             if (file[last_double] > 1):
@@ -418,7 +418,7 @@ class Position:
                 if (rank5_pawn):
                     mask = self.pinned(rank5_pawn,wtm)
                     to_square = file_mask[last_double] & rank_mask[a6]
-                    if (mask & to_square):
+                    if (mask & to_square) and not self.ep_pinned(rank5_pawn,to_square):
                         move_list.insert(0,Move(rank5_pawn,to_square,"enpassant","p",""))
         elif (not wtm and self.w_pawn_last_double_move):
             last_double = self.w_pawn_last_double_move
@@ -432,7 +432,7 @@ class Position:
                 if (rank4_pawn):
                     mask = self.pinned(rank4_pawn,wtm)
                     to_square = file_mask[last_double] & rank_mask[a3]
-                    if (mask & to_square):
+                    if (mask & to_square) and not self.ep_pinned(rank4_pawn,to_square):
                         move_list.insert(0,Move(rank4_pawn,to_square,"enpassant","P",""))
             # handle the left side capture
             if (file[last_double] > 1):
@@ -443,7 +443,7 @@ class Position:
                 if (rank4_pawn):
                     mask = self.pinned(rank4_pawn,wtm)
                     to_square = file_mask[last_double] & rank_mask[a3]
-                    if (mask & to_square):
+                    if (mask & to_square) and not self.ep_pinned(rank4_pawn,to_square):
                         move_list.insert(0,Move(rank4_pawn,to_square,"enpassant","P",""))
 
         # produce single pawn moves...these are not handled in generate_attacks
@@ -1305,6 +1305,25 @@ class Position:
                 attackers = ((attackers) & ((attackers) - 1L))
 
         return(mask)
+
+    def ep_pinned (self,from_square,to_square):
+        """
+        Determine if a horizontal pin prevents an en passant capture.
+        """
+        piece_bb = self.piece_bb
+        all_pieces = piece_bb['b_occupied'] | piece_bb['w_occupied']
+
+        if rank[to_square] == 6:
+            king = piece_bb["K"]
+            attacks = piece_bb['q'] | piece_bb['r']
+        else:
+            king = piece_bb["k"]
+            attacks = piece_bb['Q'] | piece_bb['R']
+
+        rank_before = all_pieces & rank_mask[from_square]
+        rank_after = rank_before & ~from_square & ~file_mask[to_square]
+
+        return rank_before & king and rank_attacks[king][rank_after] & attacks
 
     def reg2san (self,move):
         # Convert from regular notation to
