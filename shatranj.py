@@ -407,7 +407,7 @@ class Position:
                 if (rank5_pawn):
                     mask = self.pinned(rank5_pawn,wtm)
                     to_square = file_mask[last_double] & rank_mask[a6]
-                    if (mask & to_square):
+                    if (mask & to_square) and not self.ep_pinned(rank5_pawn,to_square):
                         move_list.insert(0,Move(rank5_pawn,to_square,"enpassant","p",""))
             # handle the left side capture
             if (file[last_double] > 1):
@@ -418,7 +418,7 @@ class Position:
                 if (rank5_pawn):
                     mask = self.pinned(rank5_pawn,wtm)
                     to_square = file_mask[last_double] & rank_mask[a6]
-                    if (mask & to_square):
+                    if (mask & to_square) and not self.ep_pinned(rank5_pawn,to_square):
                         move_list.insert(0,Move(rank5_pawn,to_square,"enpassant","p",""))
         elif (not wtm and self.w_pawn_last_double_move):
             last_double = self.w_pawn_last_double_move
@@ -432,7 +432,7 @@ class Position:
                 if (rank4_pawn):
                     mask = self.pinned(rank4_pawn,wtm)
                     to_square = file_mask[last_double] & rank_mask[a3]
-                    if (mask & to_square):
+                    if (mask & to_square) and not self.ep_pinned(rank4_pawn,to_square):
                         move_list.insert(0,Move(rank4_pawn,to_square,"enpassant","P",""))
             # handle the left side capture
             if (file[last_double] > 1):
@@ -443,7 +443,7 @@ class Position:
                 if (rank4_pawn):
                     mask = self.pinned(rank4_pawn,wtm)
                     to_square = file_mask[last_double] & rank_mask[a3]
-                    if (mask & to_square):
+                    if (mask & to_square) and not self.ep_pinned(rank4_pawn,to_square):
                         move_list.insert(0,Move(rank4_pawn,to_square,"enpassant","P",""))
 
         # produce single pawn moves...these are not handled in generate_attacks
@@ -1305,6 +1305,25 @@ class Position:
                 attackers = ((attackers) & ((attackers) - 1L))
 
         return(mask)
+
+    def ep_pinned (self,from_square,to_square):
+        """
+        Determine if a horizontal pin prevents an en passant capture.
+        """
+        piece_bb = self.piece_bb
+        all_pieces = piece_bb['b_occupied'] | piece_bb['w_occupied']
+
+        if rank[to_square] == 6:
+            king = piece_bb["K"]
+            attacks = piece_bb['q'] | piece_bb['r']
+        else:
+            king = piece_bb["k"]
+            attacks = piece_bb['Q'] | piece_bb['R']
+
+        rank_before = all_pieces & rank_mask[from_square]
+        rank_after = rank_before & ~from_square & ~file_mask[to_square]
+
+        return rank_before & king and rank_attacks[king][rank_after] & attacks
 
     def reg2san (self,move):
         # Convert from regular notation to
@@ -4253,6 +4272,34 @@ def test_promotion ():
         print "    11.1 promotion moves: FAILED"
         tests_failed += 1
 
+def test_skewered_ep ():
+    global tests_passed, tests_failed, test_number
+    print "12. test: skewered ep"
+
+    fen = "8/4p3/8/r2P3K/8/8/8/4k3"
+    p = Position(fen)
+
+    p.make_move(Move(e7, e5, "pawn double move", "", ""))
+    if position2fen(p) == "8/8/8/r2Pp2K/8/8/8/4k3":
+        print "    12.1 double pawn move: PASSED"
+        tests_passed += 1
+    else:
+        print "    12.1 double pawn move: FAILED"
+        tests_failed += 1
+
+    # After an en passant capture, both the capturer and the captured pawn
+    # would disappear from the fifth rank, leaving the king in check. Ensure
+    # this does not happen.
+    move_list = p.generate_moves(wtm=1)
+    moves,san_moves = p.get_move_list(move_list)
+    san = san_moves.values()
+    if "dxe6" not in san and "d6" in san:
+        print "    12.2 can not capture: PASSED"
+        tests_passed += 1
+    else:
+        print "    12.2 can not capture: FAILED"
+        tests_failed += 1
+
 def test_icga ():
     """
     This is some test code for an ICGA Journal article
@@ -4344,6 +4391,7 @@ def test ():
     test_check()
     test_checkmated()
     test_promotion()
+    test_skewered_ep()
     print "==========================================="
     print "total tests PASSED=%s  FAILED=%s" % (tests_passed,tests_failed)
     sys.exit()
